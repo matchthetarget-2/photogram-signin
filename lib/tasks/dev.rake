@@ -4228,4 +4228,3 @@ task({ :sample_data => :environment}) do
   puts "#{elapsed.to_i} seconds elapsed."
   puts "Generated Sample Data"
 end
-

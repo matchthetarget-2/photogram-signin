@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Photogram GUI</title>
+    <title>Photogram Signin</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,18 +11,50 @@
   </head>
 
   <body>
-    
-    <nav>
+      <nav>
       <ul>
+        <% if session[:user_id].nil? %>
+          <li>
+            <a href="/user_sign_in">Sign In</a>
+          </li>
+          <li>
+            <a href="/user_sign_up">Sign Up</a>
+          </li>
+        <% else%>
+          <li>
+            <% user_id = session[:user_id] %>
+            <% matching_user_records = User.where({ :id => user_id }) %>
+            <% current_user = matching_user_records.at(0) %>
+            <a href="/users/<%= current_user.username %>">
+              <%= current_user.username %>
+            </a>
+          </li>
+          <li>
+            <a href="/user_sign_out">Sign Out</a>
+          </li>
+        <% end%>
         <li>
           <a href="/users">Users</a>
         </li>
         <li>
           <a href="/photos">Photos</a>
         </li>
+        <li>
+          <%= session[:user_id] %>
+        </li>
       </ul>
     </nav>
+    <% if notice.present? %>
+      <div>
+        <%= notice %>
+      </div>
+    <% end %>
 
+    <% if alert.present? %>
+      <div>
+        <%= alert %>
+      </div>
+    <% end %>
     <%= yield %>
   </body>
 </html>

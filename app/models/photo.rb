@@ -14,58 +14,27 @@
 
 class Photo < ApplicationRecord
   validates(:poster, { :presence => true })
+  validates(:image, { :presence => true })
 
   def poster
-    my_owner_id = self.owner_id
-
-    matching_users = User.where({ :id => my_owner_id })
-
-    the_user = matching_users.at(0)
-
-    return the_user
+    return User.where({ :id => self.owner_id }).at(0)
   end
 
   def comments
-    my_id = self.id
-
-    matching_comments = Comment.where({ :photo_id => self.id })
-
-    return matching_comments
+    return Comment.where({ :photo_id => self.id })
   end
 
   def likes
-    my_id = self.id
-
-    matching_likes = Like.where({ :photo_id => self.id })
-
-    return matching_likes
+    return Like.where({ :photo_id => self.id })
   end
 
   def fans
-    my_likes = self.likes
-    
-    array_of_user_ids = Array.new
+    array_of_user_ids = self.likes.map_relation_to_array(:fan_id)
 
-    my_likes.each do |a_like|
-      array_of_user_ids.push(a_like.fan_id)
-    end
-
-    matching_users = User.where({ :id => array_of_user_ids })
-
-    return matching_users
+    return User.where({ :id => array_of_user_ids })
   end
 
   def fan_list
-    my_fans = self.fans
-
-    array_of_usernames = Array.new
-
-    my_fans.each do |a_user|
-      array_of_usernames.push(a_user.username)
-    end
-
-    formatted_usernames = array_of_usernames.to_sentence
-
-    return formatted_usernames
+    return self.fans.map_relation_to_array(:username).to_sentence
   end
 end
